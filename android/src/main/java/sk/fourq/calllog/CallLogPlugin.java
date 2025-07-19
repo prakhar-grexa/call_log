@@ -45,7 +45,6 @@ public class CallLogPlugin
     private static final String INTERNAL_ERROR = "INTERNAL_ERROR";
     private static final String METHOD_GET = "get";
     private static final String METHOD_QUERY = "query";
-    private static final String METHOD_DELETE = "delete";
     private static final String METHOD_EXPORT = "export";
     private static final String OPERATOR_LIKE = "LIKE";
     private static final String OPERATOR_GT = ">";
@@ -153,10 +152,9 @@ public class CallLogPlugin
         request = c;
         result = r;
 
-        List<String> permissions = new ArrayList<>(4);
+        List<String> permissions = new ArrayList<>(3);
         permissions.add(Manifest.permission.READ_CALL_LOG);
         permissions.add(Manifest.permission.READ_PHONE_STATE);
-        permissions.add(Manifest.permission.WRITE_CALL_LOG);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             permissions.add(Manifest.permission.READ_PHONE_NUMBERS);
         }
@@ -164,10 +162,10 @@ public class CallLogPlugin
             handleMethodCall();
         } else {
             if (activity != null) {
-                ActivityCompat.requestPermissions(activity, permissions.toArray(new String[4]), 0);
+                ActivityCompat.requestPermissions(activity, permissions.toArray(new String[3]), 0);
             } else {
                 r.error("MISSING_PERMISSIONS",
-                        "Permission READ_CALL_LOG, WRITE_CALL_LOG or READ_PHONE_STATE is required for plugin. Hovewer, plugin is unable to request permission because of background execution.",
+                        "Permission READ_CALL_LOG or READ_PHONE_STATE is required for plugin. However, plugin is unable to request permission because of background execution.",
                         null);
             }
         }
@@ -233,10 +231,6 @@ public class CallLogPlugin
                     predicates.add("(" + StringUtils.join(namePredicates, " OR ") + ")");
                 }
                 queryLogs(StringUtils.join(predicates, " AND "));
-                break;
-            case METHOD_DELETE:
-                String id = request.argument("id");
-                deleteCallLog(id);
                 break;
             case METHOD_EXPORT:
                 exportCallLog(request.argument("filename"));
@@ -326,28 +320,7 @@ public class CallLogPlugin
         predicates.add(field + " " + operator + " " + escapedValue);
     }
 
-    private void deleteCallLog(String id) {
-        try {
-            int rowsDeleted;
-            if (id != null) {
-                // Delete specific call log entry
-                rowsDeleted = ctx.getContentResolver().delete(
-                        CallLog.Calls.CONTENT_URI,
-                        CallLog.Calls._ID + " = ?",
-                        new String[] { id });
-            } else {
-                // Delete all call logs
-                rowsDeleted = ctx.getContentResolver().delete(
-                        CallLog.Calls.CONTENT_URI,
-                        null,
-                        null);
-            }
-            result.success(rowsDeleted);
-        } catch (Exception e) {
-            result.error(INTERNAL_ERROR, e.getMessage(), null);
-        }
-        cleanup();
-    }
+
 
     private void exportCallLog(String filename) {
         try {

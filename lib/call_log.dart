@@ -14,21 +14,6 @@ class CallLog {
     return result?.map((dynamic m) => CallLogEntry.fromMap(m)) ?? _EMPTY_RESULT;
   }
 
-  /// Delete a specific call log entry by its ID
-  /// Returns the number of entries deleted (should be 1 if successful)
-  static Future<int> deleteCallLog(String id) async {
-    final int result =
-        await _channel.invokeMethod('delete', <String, String>{'id': id});
-    return result;
-  }
-
-  /// Delete all call logs
-  /// Returns the number of entries deleted
-  static Future<int> deleteAllCallLogs() async {
-    final int result = await _channel.invokeMethod('delete', null);
-    return result;
-  }
-
   /// Export all call logs to a JSON file in the Downloads directory
   /// Returns a map containing:
   /// - count: number of entries exported

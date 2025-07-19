@@ -13,7 +13,6 @@ You may add the following permission to your Android Manifest:
 
 ```xml
 <uses-permission android:name="android.permission.READ_CALL_LOG" />
-<uses-permission android:name="android.permission.WRITE_CALL_LOG" />
 <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 ```
 
@@ -41,20 +40,6 @@ Add new permission to your manifest:
 ``` xml
 <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 ```
-
-## Delete Call Logs
-
-You can delete specific call log entries or all call logs:
-
-```dart
-// Delete a specific call log entry
-int deletedCount = await CallLog.deleteCallLog(entry.id);
-
-// Delete all call logs
-int deletedCount = await CallLog.deleteAllCallLogs();
-```
-
-The methods return the number of entries deleted (1 for single deletion, total count for bulk deletion).
 
 ## Export Call Logs
 
